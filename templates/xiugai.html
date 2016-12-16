@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8"> 
+	<title>修改密码</title>
+	<link rel="stylesheet" href="static/css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="static/css/common.css">
+	<script src="static/js/jquery-3.1.1.min.js"></script>
+	<script src="static/js/bootstrap.min.js"></script>
+</head>
+<body  class="login">
+
+
+<form class="form-horizontal" role="form" method="POST">
+
+  <div class="form-group" >
+  	
+    <label for="firstname" class="col-sm-2 control-label" >原密码</label>
+    <div class="col-sm-3">
+      <input type="text" class="form-control" name="pass_yuan" id="firstname" placeholder="原密码">
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="lastname" class="col-sm-2 control-label">修改密码</label>
+    <div class="col-sm-3">
+      <input  type="password" class="form-control" name="inputPassword"  placeholder="修改密码">
+    </div>
+     </div> 
+  <div class="form-group">
+    <label for="lastname" class="col-sm-2 control-label">确认密码</label>
+    <div class="col-sm-3">
+      <input  type="password" class="form-control" name="inputPassword1"  placeholder="确认密码">
+    </div>
+  </div>  
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-10">
+      <button type="submit" class="btn btn-default">修改密码</button>
+        <h4 style="color:red;">{{ msg }}</h4>
+     
+    
+    </div>
+  </div>
+</form>
+
+</body>
+</html>

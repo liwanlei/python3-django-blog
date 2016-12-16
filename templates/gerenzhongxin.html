@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8"> 
+	<title>博客</title>
+	{% load staticfiles %}
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/common.css' %}">
+
+    <script src="{% static 'js/jquery-3.1.1.min.js' %}"></script>
+	<script src="{% static 'js/bootstrap.min.js' %}"></script>
+</head>
+<body>
+
+<nav class="navbar navbar-default" role="navigation">
+	<div class="container-fluid"> 
+	<div class="navbar-header">
+		<a class="navbar-brand" href="/">博客园子</a>
+	</div>
+	<div class="collapse navbar-collapse" id="zhuce">
+			<ul class="nav navbar-nav">
+				<li><a href="/gerenzhongxin"><span class="glyphicon ">{{ username }}</span></a></li>
+				<li><a href="/xiugaimima"><span class="glyphicon ">修改密码</span></a></li>
+				<li><a href="/logout"><span class="glyphicon ">退出</span></a></li>
+			</ul></div>
+        </div>
+</nav>
+
+<div class="container">
+	<div class="row">
+		<div class="col-md-9">
+		  <div class="container-fluid">
+		  	<div class="row">
+		  		<div class="col-xs-6 col-md-3">
+    			</a>
+		  		</div>
+		  		<div class="col-md-9">
+		  			<div>
+		  				<h4>用户名:{{ username }}</h4>
+		  			</div>
+		  		</div>
+		  	</div>
+		  	<div  class="gedui">
+		  		<table>
+
+		  				<tr><td >
+
+		  					</td></tr>
+		  					<tr><td >
+		  						<a href="/xiebo" class="link_account_xi">写博</a>
+		  					</td></tr>
+		  			
+		  		</table>
+		  	</div>
+          <div class="feed_block">
+            <h5>最新评论</h5>
+              {% for item in comu_list %}
+                  <div>
+                  用户:<a href="/zhongxin{{ item.user_id }}/" class="feed_author">{{item.user}}</a>
+                  时间：<span>{{ item.date_publish}}</span>
+                  在文章<a href="{% url 'detail' id=item.article_id %}">{{ item.article }}</a>发表评论
+                  </div>
+              {% endfor %}
+
+          </ul>
+		  	</div>
+		  	<div class="feed_block">
+		  		<h4>最新博客</h4>
+		  		<ul id="feed_list">
+		  		{% for list in post_list %}
+        <p class="feed_item">
+        <div class="feed_body" >
+        <div class="feed_title">
+         
+        作者：<a href="#" class="feed_author">{{list.users}}</a> 发表博客：<a href="{% url 'detail' id=list.id %}" target="_blank">{{list.title}}</a>
+          <span class="feed_date">发表时间：{{ list.date_publish }}</span></div>
+          <div class="feed_desc">概述：{{ list.desc }}
+          </div>
+		
+          </div>
+        </p></p>
+        	
+		{% endfor %}
+          </ul>
+		  	</div>
+			
+		  </div>
+		</div>
+		<div class="col-md-3">
+        <div>
+        <h3>推荐文章</h3>
+            {% for tuijian in tuijian_list %}
+		 <p class="tuijian"><a href="{% url 'detail' id=tuijian.id %}">{{ tuijian }}</a></p>
+
+            {% endfor %}
+		</div>
+			
+		<div>
+		<h3>博客阅读排行</h3>
+            {% for read in readlist %}
+		<div id="yuedupaihang"> <a href="{% url 'detail' id=read.id %}">{{ read }}</a></div>
+
+            {% endfor %}
+		</div>
+		<div>
+
+			<h3>评论排行</h3>
+            {% for read in readlist %}
+		 <div id="pinglunpaihang"><a href="{% url 'detail' id=read.id %}">{{ read }}</a></div>
+
+            {% endfor %}
+
+		</div>
+		</div>
+
+
+</div>
+</div>
+</div>
+
+
+<script src="static/js/bootstrap.min.js"></script>
+</body>
+</html>

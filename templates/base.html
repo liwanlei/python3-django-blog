@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>博客</title>
+    {% load staticfiles %}
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/common.css' %}">
+
+    <script src="{% static 'js/jquery-3.1.1.min.js' %}"></script>
+	<script src="{% static 'js/bootstrap.min.js' %}"></script>
+</head>
+<body>
+
+<nav class="navbar navbar-default" role="navigation">
+	<div class="container-fluid">
+	<div class="navbar-header">
+		<a class="navbar-brand" href="#">博客园子</a>
+	</div>
+	<div>
+		<ul class="nav navbar-nav">
+			<li class="active dropdown">
+			<a href="/" >首页</a></li>
+			<li class="dropdown"><a href="/python" >python</a></li>
+			<li class="dropdown"><a href="/ceshi">测试 </a></li>
+			<li class=""><a href="/qianduan">前端</a></li>
+			<li class=""><a href="/appium">appium</a></li>
+			<li class=""><a href="/selenium">selenium</a></li>
+			<li class=""><a href="/git">git</a></li>
+			<li class=""><a href="/mysql">MySql</a></li>
+			<li class=""><a href="/guanli">管理</a></li>
+			<li class=""><a href="/dashuju">大数据</a></li>
+            <li class=""><a href="/youxi">游戏</a></li>
+
+		<form class="navbar-form navbar-left" action="/search/" method="get">
+	            <div class="form-group">
+	                <input type="text" class="form-control" placeholder="搜索" name="s">
+
+	            </div>
+        	</form>
+			<div class="collapse navbar-collapse" id="zhuce">
+			<ul class="nav navbar-nav">
+                {% if username %}
+				<li><a href="/gerenzhongxin"><span class=" ">{{username}}</span><span style="color:red;">{{ coumn }}</span></a></li>
+                    <li><a style="color: red"></a></li>
+
+				<li><a href="/xiugaimima"><span class="/xiugaimima ">修改密码</span></a></li>
+				<li><a href="/logout"><span class="/logout ">退出</span></a></li>
+                {% else %}
+                    <li><a href="/login"><span class="/login ">请登录</span></a></li>
+				    <li><a href="/reg"><span class="/reg ">注册</span></a></li>
+                {% endif %}
+			</ul></div>
+        </ul>
+    </div>
+    </div>
+</nav>
+<div class="container">
+	<div class="row">
+		<div class="col-md-9">
+			{% block content %}
+			 {% endblock %}
+		</div>
+		<div class="col-md-3">
+		 	<div>
+		 		<h2>阅读排行</h2>
+                {% block read %}
+                {% endblock %}
+		 	</div>
+		 	<div>
+                <h2>评论量排行</h2>
+                {% block pinglun %}
+                {% endblock %}
+
+		 	</div>
+		 	<div class="contai">
+		 		<h2>友情链接</h2>
+                    {% block lianjie %}
+                    {% endblock %}
+
+		 	</div>
+		 	<div>
+		 		<h2>联系作者</h2>
+			 		<p ><a href="#">邮箱</a></p>
+			 		<p ><a href="#">qq</a></p>
+			 		<p ><a href="#">博客</a></p>
+		 	</div>
+	 	</div>
+	 </div>
+</div>
+<script src="static/js/bootstrap.min.js"></script>
+</body>
+</html>
