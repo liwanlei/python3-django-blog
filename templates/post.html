@@ -4,11 +4,11 @@
 
 		<div>
 			<h4><a href="">{{ post.title }}</a></h4>
-			  <small>时间 {{ post.date_publish }} <a href="/zhongxin{{ post.users_id }}/">作者{{ post.users }}</a>  阅读{{ post.click_count }}，
+
+			  <small>时间 {{ post.date_publish }} 作者:<a href="{% url 'zhongxin' id=post.users.id%}">{{ post.users }}</a>  阅读{{ post.click_count }}，
 				  <a href="#">收藏</a>，
 				  <a href="#">编辑</a>
 			  </small>
-
 			<p>{{ post.content }}</p>
 		</div>
 			<div>
@@ -17,11 +17,9 @@
    		 </ul>
             {% for item in commn__list %}
    		 <li class="alt">
-
-
 			<h5>
 				<cite><a href="#3347885" class="layer"></a>
-				 <a id="a_comment_author_3347885" href="#" target="_blank">{{ item.user }}</a>
+				 <a id="a_comment_author_3347885" href="{% url 'zhongxin' id=item.user.id%}" target="_blank">{{ item.user }}</a>
 				<small> <span class="comment_date">{{ item.date_publish }}</span></small>
 			</cite></h5>
 			<div id="comment_body_3347885" class="blog_comment_body">

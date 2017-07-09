@@ -1,3 +1,4 @@
+# -*- coding:utf-8 -*-  
 from email import encoders
 from email.header import Header
 from email.mime.text import MIMEText

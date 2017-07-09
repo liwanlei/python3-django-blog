@@ -1,3 +1,4 @@
+# -*- coding:utf-8 -*-  
 import re
 import sys
 def getPhoneNumFromFile(fobj):#手机号

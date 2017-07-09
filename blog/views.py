@@ -1,3 +1,4 @@
+# -*- coding:utf-8 -*-  
 from django.shortcuts import render,redirect
 from blog.models import *
 from django.http import Http404, HttpResponseRedirect,HttpResponse
@@ -15,7 +16,7 @@ from blog.fenye import fenye
 from django.contrib.auth.decorators import login_required
 from blog.pipei_user import *
 import datetime
-from datetime import datetime, timezone,timedelta
+from datetime import datetime, timedelta
 def global_setting(request):
     Tag_list = Tag.objects.all()
     post1 = Article.objects.all()
@@ -38,35 +39,35 @@ def global_setting(request):
         return {'Tag_list':Tag_list,'post_list':read_list,'post_list_ping':beijing_post_list,'chaolianjie':teing_list,'username':username,'coumn':h}
     else:
         return {'Tag_list':Tag_list,'post_list':read_list,'post_list_ping':beijing_post_list,'chaolianjie':teing_list}
-def home(request): #所有文章的获取
+def home(request): 
     posts = Article.objects.all()
     count=[]
     for post in posts:
         count.append((Comment.objects.filter(comment__article=post)).count())
     post_list = fenye(request, posts=posts)
     return render(request,'index.html',{'post_list':post_list,'count':count})
-def python(request): #python 文章获取
+def python(request): 
     posts=Article.objects.filter(tag__name='python')
     post_list = fenye(request, posts=posts)
     return render(request, 'index.html', {'post_list': post_list,})
-def ceshi(request): #测试 文章获取
-    posts=Article.objects.filter(tag__name='测试')
+def ceshi(request): 
+    posts=Article.objects.filter(tag__name=u'测试')
     post_list = fenye(request, posts=posts)
     return render(request, 'index.html', {'post_list': post_list,})
-def qianduan(request): #前端 文章获取
-    posts=Article.objects.filter(tag__name='前端')
+def qianduan(request): 
+    posts=Article.objects.filter(tag__name=u'前端')
     post_list = fenye(request, posts=posts)
     return render(request, 'index.html', {'post_list': post_list,})
-def appium(request): #appium 文章获取
+def appium(request):
     posts=Article.objects.filter(tag__name='appium')
     post_list = fenye(request, posts=posts)
     return render(request, 'index.html', {'post_list': post_list,})
-def selenium(request): #selenium 文章获取
+def selenium(request): 
     posts=Article.objects.filter(tag__name='selenium')
     post_list = fenye(request, posts=posts)
     return render(request, 'index.html', {'post_list': post_list,})
 def git(request): #git 文章获取
-    posts=Article.objects.filter(tag__name='测试')
+    posts=Article.objects.filter(tag__name=u'git')
     post_list = fenye(request, posts=posts)
     return render(request, 'index.html', {'post_list': post_list,})
 def Mysql(request): #Mysql 文章获取
@@ -74,16 +75,12 @@ def Mysql(request): #Mysql 文章获取
     post_list = fenye(request, posts=posts)
     return render(request, 'index.html', {'post_list': post_list,})
 def guanli(request): #管理 文章获取
-    posts=Article.objects.filter(tag__name='管理')
+    posts=Article.objects.filter(tag__name=u'管理')
     post_list = fenye(request, posts=posts)
     return render(request, 'index.html', {'post_list': post_list,})
 def dashuju(request): #大数据 文章获取
-    posts=Article.objects.filter(tag__name='大数据')
+    posts=Article.objects.filter(tag__name=u'大数据')
     post_list=fenye(request,posts=posts)
-    return render(request, 'index.html', {'post_list': post_list,})
-def youxi(request): #游戏 文章获取
-    posts=Article.objects.filter(tag__name='游戏')
-    post_list = fenye(request, posts=posts)
     return render(request, 'index.html', {'post_list': post_list,})
 def login(request):
     errors_list = []
@@ -354,20 +351,12 @@ def xiebo(request):
                 return redirect('gerenzhongxin.html')
     return render(request,'xiebo.html',{'fenlei_list':fen1})
 def zhongxin(request,id):
-    try:
-        user=User.objects.get(id=str(id))
-        mea=request.session['username']
-        if user.username==mea:
-            return HttpResponseRedirect('/gerenzhongxin')
-        else:
-            use=Usernam.objects.get(users__exact=mea)
-            post_list=Article.objects.filter(users__username=user)
-            readlist=post_list.order_by('-click_count')[0:5]
-            me=Article.objects.filter(is_recommend=True)
-            tuijian_list=me.filter(users__username=user)
-            return render(request,'geren.html',{'user':user,"post_list":post_list,'readlist':readlist,'tuijian_list':tuijian_list})
-    except:
-        return redirect('/')
+    user=User.objects.get(id=str(id))
+    post_list=Article.objects.filter(users__username=user)
+    readlist=post_list.order_by('-click_count')[0:5]
+    me=Article.objects.filter(is_recommend=True)
+    tuijian_list=me.filter(users__username=user)
+    return render(request,'geren.html',{'user':user,"post_list":post_list,'readlist':readlist,'tuijian_list':tuijian_list})
 def shangchuantouxiang(request):
     try:
         username = request.session['username']
