@@ -1,7 +1,7 @@
 # 这是我学习django后，自己写的一个多用户博客，实现的功能有限，自己用来练手的，
 ## 所以呢，前端的我用的是bootstrap框架来写的，由于自己代码技术比较烂，以实现功能为主。 
-## 安装环境 python3.4+django1.10+pillow+mysql+pymsql， pillow这个是用来处理图片的。
-## 由于python3不能直接连接，所以我用的pymysql 进入目录，执行 python manage.py runserver 运行。
+## 安装环境 python3.4+django1.10+pillow+sqlite， pillow这个是用来处理图片的。
+## 执行 python manage.py runserver 运行。
 ## 实现功能： 
 ### 1.登录，
 ### 2.注册，

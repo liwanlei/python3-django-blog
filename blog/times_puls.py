@@ -9,7 +9,8 @@ def time_plus(endtime,starttime):
     td= (time_b-time_a).seconds
     return td
 if __name__=='__main__':
-    endtime=dates.now()
+    pass
+    #endtime=dates.now()
     #time.sleep(5)
-    starttime=dates.now()
-    print(time_plus(endtime,starttime))
+    #starttime=dates.now()
+    #print(time_plus(endtime,starttime))

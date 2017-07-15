@@ -75,7 +75,6 @@ class Links(models.Model):
     title=models.CharField(u'标题',max_length=50)
     description=models.CharField(u'友情链接描述',max_length=200)
     callback_url=models.URLField(u'url地址')
-    date_publish = models.DateTimeField(u'评论时间', auto_now_add=True)
     index=models.IntegerField(u'排列顺序',default=999)
     class Meta:
         verbose_name = u'友情链接'

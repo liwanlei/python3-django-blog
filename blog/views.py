@@ -39,22 +39,22 @@ def global_setting(request):
         return {'Tag_list':Tag_list,'post_list':read_list,'post_list_ping':beijing_post_list,'chaolianjie':teing_list,'username':username,'coumn':h}
     else:
         return {'Tag_list':Tag_list,'post_list':read_list,'post_list_ping':beijing_post_list,'chaolianjie':teing_list}
-def home(request): 
+def home(request):
     posts = Article.objects.all()
     count=[]
     for post in posts:
         count.append((Comment.objects.filter(comment__article=post)).count())
     post_list = fenye(request, posts=posts)
     return render(request,'index.html',{'post_list':post_list,'count':count})
-def python(request): 
+def python(request):
     posts=Article.objects.filter(tag__name='python')
     post_list = fenye(request, posts=posts)
     return render(request, 'index.html', {'post_list': post_list,})
-def ceshi(request): 
+def ceshi(request):
     posts=Article.objects.filter(tag__name=u'测试')
     post_list = fenye(request, posts=posts)
     return render(request, 'index.html', {'post_list': post_list,})
-def qianduan(request): 
+def qianduan(request):
     posts=Article.objects.filter(tag__name=u'前端')
     post_list = fenye(request, posts=posts)
     return render(request, 'index.html', {'post_list': post_list,})
@@ -62,7 +62,7 @@ def appium(request):
     posts=Article.objects.filter(tag__name='appium')
     post_list = fenye(request, posts=posts)
     return render(request, 'index.html', {'post_list': post_list,})
-def selenium(request): 
+def selenium(request):
     posts=Article.objects.filter(tag__name='selenium')
     post_list = fenye(request, posts=posts)
     return render(request, 'index.html', {'post_list': post_list,})

@@ -14,23 +14,14 @@ import os
 import socket
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
-
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = '2nq*)__r9p-n(b^)07wf_(6*di6e3_1rt^ljfdb)5sz-+q@hrd'
-
 # SECURITY WARNING: don't run with debug turned on in production!
-
 DEBUG = True
-
 ALLOWED_HOSTS = []
-
-
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -75,10 +66,10 @@ WSGI_APPLICATION = 'blog_project.wsgi.application'
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'blogdb',
-        'USER':'root',
-        'PASSWORD':'root',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': 'blog.db',
+        'USER':'',
+        'PASSWORD':'',
         'HOST':'',
         'PORT':'',
     }

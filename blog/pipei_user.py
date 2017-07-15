@@ -17,8 +17,8 @@ def getqq(fobj):#qq
     regex = re.compile(r"[1-9][0-9]{4,11}", re.IGNORECASE)
     user = regex.findall(fobj)
     return user
-if __name__ == '__main__':
-    he=getMailAddFromFile('1596463619@163.com')
-    print(he)
-    print(getuser('idfpoijojojijdsfdsij'))
-    print(getqq('95295'))
+# if __name__ == '__main__':
+#     he=getMailAddFromFile('1596463619@163.com')
+#     print(he)
+#     print(getuser('idfpoijojojijdsfdsij'))
+#     print(getqq('95295'))

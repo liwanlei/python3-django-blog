@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
         {% for list in post_list %}
-
             <h4 ><a href="{% url 'detail' id=list.id %}">{{list.title}}</a></h4>
 			  <small>时间 {{ list.date_publish |date:"Y-m-d"}} 作者
         <a href="{% url 'zhongxin' id=list.users.id%}">{{ list.users }}</a> 阅读量：{{ list.click_count }}，
@@ -19,22 +18,18 @@
       {% if post_list.has_previous %}
         <li><a href="?page={{ post_list.previous_page_number }}">上一页</a></li>
       {% endif %}
-
       {% if post_list.has_next %}
         <li><a href="?page={{ post_list.next_page_number }}">下一页</a></li>
       {% endif %}
       </ul>
       </div>
     {% endif %}
-
 {% endblock %}
-
 {% block read %}
     {% for item in post_list %}
     <p ><a href="{% url 'detail' id=item.id %}">{{ item.title }}</a></p>
     {% endfor %}
 {% endblock %}
-
 {% block pinglun %}
     {% for pi in post_list_ping %}
     <p ><a href="{% url 'detail' id=pi.id %}">{{ pi.title}}</a></p>

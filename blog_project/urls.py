@@ -20,7 +20,7 @@ from blog.views import *
 from django.conf.urls.static import static
 from django.conf import  settings
 urlpatterns = [
-   # url(r'^uploads/(?P<path>.*)$','django.views.static.serve',{'document_root':settings.STATICFILES_DIRS, 'show_indexes': True}),
+   #url(r'^uploads/(?P<path>.*)$','django.views.static.serve',{'document_root':settings.STATICFILES_DIRS, 'show_indexes': True}),
 
     url(r'^admin/', admin.site.urls),
     url(r'^$', home, name=u'首页'),

@@ -12,7 +12,6 @@ def _format_addr(s):
 def send_text(to_addr,email,code):
     from_addr='952943386@qq.com'
     password='zjbuavvaffibbdca'
-
     message =MIMEText( u"""
                 <h2>博客(<a  target=_blank>leiziboke.com</a>)<h2><br />
     <table border="1px" cellpadding="3" cellspacing="0">
@@ -34,7 +33,6 @@ def send_text(to_addr,email,code):
     message['From'] = _format_addr('博客 <%s>' % from_addr)
     message['To'] = _format_addr('管理员 <%s>' % to_addr)
     message['Subject'] = Header('重置密码', 'utf-8').encode()
-
     server = smtplib.SMTP_SSL("smtp.qq.com", 465)
     try:
         server.login(from_addr, password)

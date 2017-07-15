@@ -6,12 +6,10 @@
 	{% load staticfiles %}
     <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'css/common.css' %}">
-
     <script src="{% static 'js/jquery-3.1.1.min.js' %}"></script>
 	<script src="{% static 'js/bootstrap.min.js' %}"></script>
 </head>
 <body>
-
 <nav class="navbar navbar-default" role="navigation">
 	<div class="container-fluid">
 	<div class="navbar-header">
@@ -19,14 +17,13 @@
 	</div>
 	<div class="collapse navbar-collapse" id="zhuce">
 			<ul class="nav navbar-nav">
-                <li><img src="..\static\touxiang\2.jpg" height="55" width="60" ></li>
-				<li><a href="/gerenzhongxin"><span class="glyphicon ">{{ username }}</span></a></li>
-				<li><a href="/logout"><span class="glyphicon ">退出</span></a></li>
+                {% load staticfiles %}
+                <li><img src=" {% static 'touxiang/2.jpg' %}" height="55" width="60" ></li>
+				<li><a href="{{ gerenzhongxin }}"><span class="glyphicon ">{{ username }}</span></a></li>
+				<li><a href="{{ logout }}"><span class="glyphicon ">退出</span></a></li>
 			</ul></div>
         </div>
 </nav>
-
-
 <div class="container">
 	<div class="row">
 		<div class="col-md-9">
@@ -35,7 +32,6 @@
 		  		<div class="col-xs-6 col-md-3">
 		  		</div>
 		  		<div class="col-md-9">
-		  			
 		  		</div>
 		  	</div>
 		  	<div  class="gedui">
@@ -53,15 +49,14 @@
 		  		<div>
 		  			<div><b>内容</b></div>
 		  		</div>
-		  		<div id="content"><textarea id="tbCommentBody" class="comment_textarea" name="content"></textarea></div>
-		  		<div id="fenlei"> 分类：
-
-		  		<select name="jumpMenu" id="jumpMenu" >
-                    {% for fenlei in fenlei_list %}
-		  			<option>{{ fenlei }}</option>
-                    {% endfor %}
-		  		</select>
-
+                <div id="content">
+                    <textarea id="tbCommentBody" class="comment_textarea" name="content"></textarea></div></form>
+                <div id="fenlei"> 分类：
+                    <select  name="jumpMenu" id="jumpMenu" >
+                        {% for fenlei in fenlei_list %}
+                        <option>{{ fenlei }}</option>
+                        {% endfor %}
+                    </select>
 		  		</div>
 		  		<div id="biaoqian">标签{% for tag in Tag_list %}
 		  		<label><input name="checkbox" type="checkbox" value="{{ tag }} " >{{ tag }} </label>
@@ -73,25 +68,15 @@
 					<input type="submit" name="" value="发表">
 				</div>
             </form>
-
-
 		  </div>
 		</div>
         </div>
 		<div class="col-md-3">
 		<div>
-
 		</div>
-
-		
 		</div>
-
-
 </div>
 </div>
 </div>
-
-
-<script src="js/bootstrap.min.js"></script>	
 </body>
 </html>

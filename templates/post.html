@@ -1,10 +1,8 @@
 {% extends "base.html" %}
 {% block content %}
     <div class="col-md-9" >
-
 		<div>
 			<h4><a href="">{{ post.title }}</a></h4>
-
 			  <small>时间 {{ post.date_publish }} 作者:<a href="{% url 'zhongxin' id=post.users.id%}">{{ post.users }}</a>  阅读{{ post.click_count }}，
 				  <a href="#">收藏</a>，
 				  <a href="#">编辑</a>
@@ -13,7 +11,7 @@
 		</div>
 			<div>
 			<ul class="postmetadata">
-	        <li class="icon_cat" id="BlogPostCategory">分类: <a href="/{{ post.categorys }}" target="_blank">{{ post.categorys }}</a></li>
+	        <li class="icon_cat" id="BlogPostCategory">分类: <a href="{{ post.categorys }}" target="_blank">{{ post.categorys }}</a></li>
    		 </ul>
             {% for item in commn__list %}
    		 <li class="alt">
@@ -42,20 +40,16 @@
 		        <button type="submit" class="btn btn-default" >提交评论</button></div>
                         </form>
 			{% else %}
-			<div class="login_tips">注册用户登录后才能发表评论，请 <a rel="nofollow" href="/login" class="underline" >登录</a> 或 <a rel="nofollow" href="/reg" class="underline" onclick="">注册</a>，<a href="http://127.0.0.1:8000/">访问</a>网站首页。</div>
-			  {% endif %}
+			<div class="login_tips">注册用户登录后才能发表评论，请 <a rel="nofollow" href="{{ login }}" class="underline" >登录</a> 或 <a rel="nofollow" href="/reg" class="underline" onclick="">注册</a>，<a href="http://127.0.0.1:8000/">访问</a>网站首页。</div>
+                  </div>  {% endif %}
                 </form>
 		</div>
-
-
 {% endblock %}
-
 {% block read %}
     {% for item in post_list %}
     <p ><a href="{% url 'detail' id=item.id %}">{{ item.title }}</a></p>
     {% endfor %}
 {% endblock %}
-
 {% block pinglun %}
     {% for pi in post_list_ping %}
     <p ><a href="{% url 'detail' id=pi.id %}">{{ pi.title}}</a></p>
