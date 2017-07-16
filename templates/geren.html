@@ -50,21 +50,15 @@
         <li class="feed_item">
         <div class="feed_body" >
         <div class="feed_title">
-
         <a href="#" class="feed_author">{{list.users}}</a> 发表博客：<a href="{% url 'detail' id=list.id %}" target="_blank">{{list.title}}</a>
           <span class="feed_date">{{ list.date_publish }}</span></div>
           <div class="feed_desc">{{ list.desc }}
           </div>
-
           </div>
         </li></li>
-
 		{% endfor %}
           </ul>
-
-
 		  	</div>
-
 		  </div>
 		</div>
 		<div class="col-md-3">
@@ -72,34 +66,22 @@
         <h3>推荐文章</h3>
             {% for tuijian in tuijian_list %}
 		 <li><a href="{% url 'detail' id=tuijian.id %}">{{ tuijian }}</a></li>
-
             {% endfor %}
 		</div>
-
 		<div>
 		<h3>博客阅读排行</h3>
             {% for read in readlist %}
 		 <li><a href="{% url 'detail' id=read.id %}">{{ read }}</a></li>
-
             {% endfor %}
 		</div>
 		<div>
-
 			<h3>评论排行</h3>
             {% for read in readlist %}
 		 <li><a href="{% url 'detail' id=read.id %}">{{ read }}</a></li>
-
             {% endfor %}
-
 		</div>
 		</div>
-
-
 </div>
 </div>
-</div>
-
-
-<script src="static/js/bootstrap.min.js"></script>
 </body>
 </html>

@@ -18,9 +18,9 @@
 	<div class="collapse navbar-collapse" id="zhuce">
 			<ul class="nav navbar-nav">
                 <li><img src="..\static\touxiang\2.jpg" height="55" width="60" ></li>
-				<li><a href="{{ gerenzhongxin }}"><span class="glyphicon ">{{ username }}</span></a></li>
-				<li><a href="{{ xiugaimima }}"><span class="glyphicon ">修改密码</span></a></li>
-				<li><a href="{{ logout }}"><span class="glyphicon ">退出</span></a></li>
+				<li><a href="{%  url 'geren' %}"><span class="glyphicon ">{{ username }}</span></a></li>
+				<li><a href="{% url 'xiugaimima' %}"><span class="glyphicon ">修改密码</span></a></li>
+				<li><a href="{%  url 'logout' %}"><span class="glyphicon ">退出</span></a></li>
 			</ul></div>
         </div>
 </nav>
@@ -49,7 +49,7 @@
 		  				<tr><td >
 		  					</td></tr>
 		  					<tr><td >
-		  						<a href="{{ xiebo }}" class="link_account_xi">写博</a>
+		  						<a href="{%  url 'xiebo' %}" class="link_account_xi">写博</a>
 		  					</td></tr>
 		  		</table>
 		  	</div>

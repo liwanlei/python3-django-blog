@@ -9,7 +9,7 @@
             <header class="post-header">
                 <div>
 			<h4><a href="{% url 'detail' id=post.id %}">{{ post.title }}</a></h4>
-			  <small>时间 {{ post.date_publish }}作者<a href="/zhongxin{{ post.users_id }}/">{{ post.users }} </a>  阅读，
+			  <small>时间 {{ post.date_publish }}作者<a href="{% url 'zhongxin' id=post.users_id   %}">{{ post.users }} </a>  阅读，
 				  <a href="">收藏</a>，
 			  </small>
 			<p>{{ post.desc }}</p><a class="pure-button" href="{% url 'detail' id=post.id %}}" >更多  </a>

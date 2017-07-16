@@ -32,8 +32,8 @@
   <div class="form-group">
     <div class="col-sm-offset-2 col-sm-10">
       <button type="submit" class="btn btn-default" id="denglu">登录</button>
-      <label>没有账号，前去<a href="{{ reg }}">注册</a></label><span>    </span>
-      <h4>忘记密码？<a href="{{ reset_pwd }}">通过邮箱找回密码</a></h4>
+      <label>没有账号，前去<a href="{%  url 'reg' %}">注册</a></label><span>    </span>
+      <h4>忘记密码？<a href="{%  url 'reset_pwd' %}">通过邮箱找回密码</a></h4>
         <h4 style="color: red">{{ msg }}</h4>
 
     
