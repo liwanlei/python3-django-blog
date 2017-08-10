@@ -17,6 +17,7 @@ from django.contrib.auth.decorators import login_required
 from blog.pipei_user import *
 import datetime
 from datetime import datetime, timedelta
+from django.views.generic.base import View
 def global_setting(request):
     Tag_list = Tag.objects.all()
     post1 = Article.objects.all()
@@ -39,13 +40,14 @@ def global_setting(request):
         return {'Tag_list':Tag_list,'post_list':read_list,'post_list_ping':beijing_post_list,'chaolianjie':teing_list,'username':username,'coumn':h}
     else:
         return {'Tag_list':Tag_list,'post_list':read_list,'post_list_ping':beijing_post_list,'chaolianjie':teing_list}
-def home(request):
-    posts = Article.objects.all()
-    count=[]
-    for post in posts:
-        count.append((Comment.objects.filter(comment__article=post)).count())
-    post_list = fenye(request, posts=posts)
-    return render(request,'index.html',{'post_list':post_list,'count':count})
+class HomeView(View):
+    def get(self,request):
+        posts = Article.objects.all()
+        count=[]
+        for post in posts:
+            count.append((Comment.objects.filter(comment__article=post)).count())
+        post_list = fenye(request, posts=posts)
+        return render(request,'index.html',{'post_list':post_list,'count':count})
 def python(request):
     posts=Article.objects.filter(tag__name='python')
     post_list = fenye(request, posts=posts)
@@ -82,31 +84,24 @@ def dashuju(request): #大数据 文章获取
     posts=Article.objects.filter(tag__name=u'大数据')
     post_list=fenye(request,posts=posts)
     return render(request, 'index.html', {'post_list': post_list,})
-def login(request):
-    errors_list = []
-    if request.method == 'GET':
-        # 记住来源的url，如果没有则设置为首页('/')
-        request.session['login_from'] = request.META.get('HTTP_REFERER', '/')
-    elif request.method == 'POST':
-        if request.method == 'GET':
-            request.session['login_from'] = request.META.get('HTTP_REFERER', '/')
-        elif request.method == 'POST':
-            username=request.POST.get('username',None)
-            password=request.POST.get('password',None)
-            user = User.objects.filter(username__exact = username,password__exact = password)
-            request.session['username'] = username
-            if user:
-                if request.session['login_from']=='http://127.0.0.1:8000/reg' or request.session['login_from']=='http://127.0.0.1:8000/xiugaimima':
-                    response=HttpResponseRedirect('/')
-                    response.set_cookie('username', username, 3600)
-                    return response
-                response= HttpResponseRedirect(request.session['login_from'])
-                response.set_cookie('username', username, 3600)
-                return response
-            return render(request,'login.html',{'msg':'用户名或者密码错误'})
-    return render(request,'login.html')
-def reg(request):
-    if request.method=='POST':
+class LoginView(View):
+    def get(self,request):
+        return render(request, 'login.html')
+    def post(self,request):
+        errors_list = []
+        username=request.POST.get('username',None)
+        password=request.POST.get('password',None)
+        user = User.objects.filter(username__exact = username,password__exact = password)
+        request.session['username'] = username
+        if user:
+            response= HttpResponseRedirect('/')
+            response.set_cookie('username', username, 3600)
+            return response
+        return render(request,'login.html',{'msg':'用户名或者密码错误'})
+class RegView(View):
+    def get(self,request):
+        return render(request, 'reg.html')
+    def post(self,request):
         username=request.POST['username']
         if len(getuser(username))<=0:
             return render(request,'reg.html',{'msg':u'用户名应该是6-16组成'})
@@ -135,15 +130,22 @@ def reg(request):
                 return HttpResponseRedirect('login')
             else:
                 return render(request,'reg.html',{'msg':u'请查看密码是否一致'})
-    return render(request,'reg.html')
-def detail(request, id):
-    try:
+        return render(request,'reg.html')
+class DetailView(View):
+    def get(self,request,id):
         post = Article.objects.get(id=str(id))
-        p1=Article.objects.get(id=str(id))
-        p1.click_count+=1
+        p1 = Article.objects.get(id=str(id))
+        p1.click_count += 1
         p1.save()
         commn__list = Comment.objects.filter(article__title=post)
-        if request.method=='POST':
+        return render(request, 'post.html', {'post': post, 'commn__list': commn__list})
+    def post(self,request, id):
+        try:
+            post = Article.objects.get(id=str(id))
+            p1 = Article.objects.get(id=str(id))
+            p1.click_count += 1
+            p1.save()
+            commn__list = Comment.objects.filter(article__title=post)
             username = request.session['username']
             if username:
                 content=request.POST['content']
@@ -156,60 +158,62 @@ def detail(request, id):
                     con.user=user
                     con.save()
                     return render(request, 'post.html', {'post': post, 'commn__list': commn__list})
-                else:
-                    return render(request,'post.html',{'msg':u'评论不能为空'})
+                return render(request,'post.html',{'msg':u'评论不能为空'})
             return render(request, 'post.html', {'msg': u'请登陆后评论'})
-        else:
-            return render(request, 'post.html', {'post': post,'commn__list':commn__list})
-    except Article.DoesNotExist:
-        raise Http404
-    return render(request, 'post.html', {'post': post, 'commn__list': commn__list})
-def logout(request):
-   # request.session['login_from'] = request.META.get('HTTP_REFERER', '/')
-    try:
-        user = User.objects.get(username__exact=request.session['username'])
-        user.last_login= datetime.utcnow()
-        user.save()
-        del request.session['username']
-        return render(request,'index.html')
-    except:
-        return HttpResponseRedirect('/')
-def gerenzhongxin(request):
-    try:
-        username = request.session['username']
+        except Article.DoesNotExist:
+            raise Http404
+class LogoutView(View):
+    def get(self,request):
         try:
-            post_list6 = Article.objects.filter(users__username=username)
-            post_list = fenye(request, posts=post_list6)
-            readlist = post_list6.order_by('-click_count')[0:6]
-            me = Article.objects.filter(is_recommend=True)
-            tuijian_list = me.filter(users__username=username)
-            me = Article.objects.filter(users__exact=(User.objects.filter(username__exact=username)))
-            comu=[]
-            for i in me:
-                comu.extend(Comment.objects.filter(user__comment__article=i).filter(date_publish__gte=(User.objects.get(username__exact=username)).last_login))
-            if len(comu)<=0:
-                return render(request, 'gerenzhongxin.html',{"post_list": post_list, 'readlist': readlist, 'tuijian_list': tuijian_list})
-            return render(request, 'gerenzhongxin.html',{"post_list": post_list, 'readlist': readlist, 'tuijian_list': tuijian_list,"comu_list":comu})
-        except:
-            return render(request, 'gerenzhongxin.html',)
-    except:
-        return redirect('/')
-def blog_search(request):
-    if 's' in request.GET:
-        s = request.GET['s']
-        if not s:
+            user = User.objects.get(username__exact=request.session['username'])
+            user.last_login= datetime.utcnow()
+            user.save()
+            del request.session['username']
             return render(request,'index.html')
-        else:
-            post_list = Article.objects.filter(title__contains=s)
-            if len(post_list) == 0 :
-                return render(request,'archives.html', {'post_list' : post_list,
-                                                    'error' : True})
-            else :
-                return render(request,'archives.html', {'post_list' : post_list,
-                                                        'error' : False})
-    return redirect('/')
-def reset_pwd(request):
-    if request.method=='POST':
+        except:
+            return HttpResponseRedirect('/')
+class GerenzhongxinView(View):
+    def get(self,request):
+        try:
+            username = request.session['username']
+            try:
+                post_list6 = Article.objects.filter(users__username=username)
+                post_list = fenye(request, posts=post_list6)
+                readlist = post_list6.order_by('-click_count')[0:6]
+                me = Article.objects.filter(is_recommend=True)
+                tuijian_list = me.filter(users__username=username)
+                me = Article.objects.filter(users__exact=(User.objects.filter(username__exact=username)))
+                comu=[]
+                for i in me:
+                    comu.extend(Comment.objects.filter(user__comment__article=i).filter(date_publish__gte=(User.objects.get(username__exact=username)).last_login))
+                if len(comu)<=0:
+                    return render(request, 'gerenzhongxin.html',{"post_list": post_list, 'readlist': readlist, 'tuijian_list': tuijian_list})
+                return render(request, 'gerenzhongxin.html',{"post_list": post_list, 'readlist': readlist, 'tuijian_list': tuijian_list,"comu_list":comu})
+            except:
+                return render(request, 'gerenzhongxin.html',)
+        except:
+            return redirect('/')
+class BlogSearchView(View):
+    def get(self,request):
+        return render(request, 'archives.html',{})
+    def post(self,request):
+        if 's' in request.GET:
+            s = request.GET['s']
+            if not s:
+                return render(request,'index.html')
+            else:
+                post_list = Article.objects.filter(title__contains=s)
+                if len(post_list) == 0 :
+                    return render(request,'archives.html', {'post_list' : post_list,
+                                                        'error' : True})
+                else :
+                    return render(request,'archives.html', {'post_list' : post_list,
+                                                            'error' : False})
+        return redirect('/')
+class ResetpwdView(View):
+    def get(self,request):
+        return render(request, 'zhaohui.html')
+    def post(self,request):
         user= request.POST['firstname']
         email=request.POST['email']
         use=User.objects.filter(username__exact=user)
@@ -234,8 +238,7 @@ def reset_pwd(request):
                         if s == 200:
                             User_ex.objects.create(email=email, valid_code=code)
                             return render(request,'chongzhi.html')
-                        else:
-                            return render(request, 'zhaohui.html', {'msg': '找回失败，请联系管理员，或者重新找回'})
+                        return render(request, 'zhaohui.html', {'msg': '找回失败，请联系管理员，或者重新找回'})
                     except:
                         code=generate_verification_code(10)
                         to_addr=email
@@ -245,8 +248,7 @@ def reset_pwd(request):
                         if s==200:
                             User_ex.objects.create(email=email,valid_code=code)
                             return HttpResponseRedirect('chongzhi.html')
-                        else:
-                            return render(request,'zhaohui.html',{'msg':'找回失败，请联系管理员，或者重新找回'})
+                        return render(request,'zhaohui.html',{'msg':'找回失败，请联系管理员，或者重新找回'})
                 code = generate_verification_code(10)
                 to_addr = email
                 email = email
@@ -255,15 +257,13 @@ def reset_pwd(request):
                 if s == 200:
                     User_ex.objects.create(email=email, valid_code=code)
                     return render(request,'chongzhi.html')
-                else:
-                    return render(request, 'zhaohui.html', {'msg': '找回失败，请联系管理员，或者重新找回'})
-            else:
-                return render(request, 'zhaohui.html',{'msg':'邮箱不存在'})
-        else:
-            return render(request, 'zhaohui.html', {'msg': '用户名不存在'})
-    return render(request,'zhaohui.html')
-def ret_passord(request):
-    if request.method=='POST':
+                return render(request, 'zhaohui.html', {'msg': '找回失败，请联系管理员，或者重新找回'})
+            return render(request, 'zhaohui.html',{'msg':'邮箱不存在'})
+        return render(request, 'zhaohui.html', {'msg': '用户名不存在'})
+class RetpasswordView(View):
+    def get(self,request):
+        return render(request, 'chongzhi.html')
+    def post(self,request):
         email=request.POST['email']
         yanzhengma = request.POST['yanzhengma']
         inputPassword = request.POST['inputPassword']
@@ -276,90 +276,99 @@ def ret_passord(request):
             td=time_plus(time_plu,email_date)
             if td>=600:
                 return render(request, 'chongzhi.html',{'msg':'验证码超过有效期'})
-            else:
-                if yanzhengma == emaile.valid_code:
-                    if inputPassword==inputPassword1:
-                        if inputPassword==User.objects.get(email=email).password:
-                            return render(request, 'chongzhi.html', {'msg': '密码与最近修改一致'})
-                        me = User.objects.get(email=email)
-                        me.password = inputPassword
-                        me.save()
-                        User_ex.objects.filter(email=email).delete()
-                        return HttpResponseRedirect('login.html')
-                    return render(request, 'chongzhi.html', {'msg': '请确认密码'})
-                return render(request, 'chongzhi.html', {'msg': '验证码有误'})
-        else:
-            return render(request, 'chongzhi.html', {'msg': '邮箱不存在'})
-    return render(request,'chongzhi.html')
-def xiugaimima(request):
-    if not request.session.get('username'):
-        return HttpResponseRedirect('login')
-    username = request.session['username']
-    if request.method=='POST':
-        password=request.POST['pass_yuan']
-        xiu_pass=request.POST['inputPassword']
-        que_pass = request.POST['inputPassword1']
-        pass1=User.objects.get(username=username).password
-        if pass1==password:
-            if xiu_pass==que_pass and len(getuser(xiu_pass))>0 and xiu_pass!=password:
-                usern=User.objects.get(username=username)
-                usern.password=xiu_pass
-                usern.save()
-                return redirect('login.html')
-            return render(request, 'xiugai.html',{'msg':'请确认修改密码'})
-        return render(request, 'xiugai.html', {'msg': '原密码输入有误'})
-    return render(request, 'xiugai.html')
-def xiebo(request):
-    if  not request.session.get('username'):
-        return  HttpResponseRedirect('login')
-    username = request.session['username']
-    fen1=Catagory.objects.all()
-    if request.method=='POST':
-        user=User.objects.get(username=username)
-        title=request.POST['biaoti1']
-        try:
-            titl=Article.objects.get(title=title)
-            return render(request, 'xiebo.html', {'msg': "文章标题不能重复",'fenlei_list':fen1})
-        except:
-                if len(title)<=0:
-                    return render(request,'xiebo.html',{'msg':"标题不能为空",'fenlei_list':fen1})
-                content=request.POST['content']
-                fenle=request.POST['jumpMenu']
-                fen=Catagory.objects.get(name=fenle)
-                if len(fenle)<=0:
-                    return render(request, 'xiebo.html', {'msg': "标签不能为空",'fenlei_list':fen1})
-                biaoqian_list= request.POST.getlist('checkbox')
-                biaoqian=(Tag.objects.get(name=biaoqian)for biaoqian in biaoqian_list)
-                try:
-                    tuijian=request.POST['tuijian']
-                    tuijian=True
-                except:
-                    tuijian=False
-                bei=Article()
-                bei.users=user
-                bei.title=title
-                bei.categorys=fen
-                bei.content=content
-                bei.desc=content[:10]
-                bei.is_recommend=tuijian
-                for i in biaoqian:
-                    bei.tag.add(i)
-                bei.save()
-                return redirect('geren')
-    return render(request,'xiebo.html',{'fenlei_list':fen1})
-def zhongxin(request,id):
-    user=User.objects.get(id=str(id))
-    post_list=Article.objects.filter(users__username=user)
-    readlist=post_list.order_by('-click_count')[0:5]
-    me=Article.objects.filter(is_recommend=True)
-    tuijian_list=me.filter(users__username=user)
-    return render(request,'geren.html',{'user':user,"post_list":post_list,'readlist':readlist,'tuijian_list':tuijian_list})
-def shangchuantouxiang(request):
-    try:
+            if yanzhengma == emaile.valid_code:
+                if inputPassword==inputPassword1:
+                    if inputPassword==User.objects.get(email=email).password:
+                        return render(request, 'chongzhi.html', {'msg': '密码与最近修改一致'})
+                    me = User.objects.get(email=email)
+                    me.password = inputPassword
+                    me.save()
+                    User_ex.objects.filter(email=email).delete()
+                    return HttpResponseRedirect('login.html')
+                return render(request, 'chongzhi.html', {'msg': '请确认密码'})
+            return render(request, 'chongzhi.html', {'msg': '验证码有误'})
+        return render(request, 'chongzhi.html', {'msg': '邮箱不存在'})
+class XiugaimimaView(View):
+    def get(self,request):
+        return render(request, 'xiugai.html')
+    def post(self,request):
+        if not request.session.get('username'):
+            return HttpResponseRedirect('login')
         username = request.session['username']
         if request.method=='POST':
+            password=request.POST['pass_yuan']
+            xiu_pass=request.POST['inputPassword']
+            que_pass = request.POST['inputPassword1']
+            pass1=User.objects.get(username=username).password
+            if pass1==password:
+                if xiu_pass==que_pass and len(getuser(xiu_pass))>0 and xiu_pass!=password:
+                    usern=User.objects.get(username=username)
+                    usern.password=xiu_pass
+                    usern.save()
+                    return redirect('login.html')
+                return render(request, 'xiugai.html',{'msg':'请确认修改密码'})
+            return render(request, 'xiugai.html', {'msg': '原密码输入有误'})
+        return render(request, 'xiugai.html')
+class XieboView(View):
+    def get(self,request):
+        if not request.session.get('username'):
+            return HttpResponseRedirect('login')
+        username = request.session['username']
+        fen1 = Catagory.objects.all()
+        return render(request, 'xiebo.html', {'fenlei_list': fen1})
+    def post(self,request):
+        if  not request.session.get('username'):
+            return  HttpResponseRedirect('login')
+        username = request.session['username']
+        fen1=Catagory.objects.all()
+        if request.method=='POST':
+            user=User.objects.get(username=username)
+            title=request.POST['biaoti1']
+            try:
+                titl=Article.objects.get(title=title)
+                return render(request, 'xiebo.html', {'msg': "文章标题不能重复",'fenlei_list':fen1})
+            except:
+                    if len(title)<=0:
+                        return render(request,'xiebo.html',{'msg':"标题不能为空",'fenlei_list':fen1})
+                    content=request.POST['content']
+                    fenle=request.POST['jumpMenu']
+                    fen=Catagory.objects.get(name=fenle)
+                    if len(fenle)<=0:
+                        return render(request, 'xiebo.html', {'msg': "标签不能为空",'fenlei_list':fen1})
+                    biaoqian_list= request.POST.getlist('checkbox')
+                    biaoqian=(Tag.objects.get(name=biaoqian)for biaoqian in biaoqian_list)
+                    try:
+                        tuijian=request.POST['tuijian']
+                        tuijian=True
+                    except:
+                        tuijian=False
+                    bei=Article()
+                    bei.users=user
+                    bei.title=title
+                    bei.categorys=fen
+                    bei.content=content
+                    bei.desc=content[:10]
+                    bei.is_recommend=tuijian
+                    for i in biaoqian:
+                        bei.tag.add(i)
+                    bei.save()
+                    return redirect('geren')
+        return render(request,'xiebo.html',{'fenlei_list':fen1})
+class ZhongxinView(View):
+    def get(self,request,id):
+        user=User.objects.get(id=str(id))
+        post_list=Article.objects.filter(users__username=user)
+        readlist=post_list.order_by('-click_count')[0:5]
+        me=Article.objects.filter(is_recommend=True)
+        tuijian_list=me.filter(users__username=user)
+        return render(request,'geren.html',{'user':user,"post_list":post_list,'readlist':readlist,'tuijian_list':tuijian_list})
+class ShangchuantouxiangView(View):
+    def get(self,request):
+        return render(request, 'xiu_touxiang.html')
+    def post(self,request):
+        try:
+            username = request.session['username']
             photo = request.FILES['touxiang']
-
             photo_last = str(photo).split('.')[-1]
             photoname = '%s.%s' % (username, photo_last)
             img = Image.open(photo)
@@ -369,18 +378,25 @@ def shangchuantouxiang(request):
                 be.avatar=photoname
             except Exception as e:
                 print(e)
-            return redirect('gerenzhongxin.html')
-        return render(request,'xiu_touxiang.html')
-    except:
-        return  redirect('login.html')
-def bianji(request,id):
-    if  not request.session.get('username'):
-        return  redirect('login')
-    post_user=Article.objects.get(id=id)
-    fenlei=Catagory.objects.all()
-    user=User.objects.get(username=request.session.get('username'))
-    if post_user.users_id==user.id:
-        if request.method =='POST':
+                return redirect('gerenzhongxin.html')
+            return render(request,'xiu_touxiang.html')
+        except:
+            return  redirect('login.html')
+class BianjiView(View):
+    def get(self,request,id):
+        if not request.session.get('username'):
+            return redirect('login')
+        post_user = Article.objects.get(id=id)
+        fenlei = Catagory.objects.all()
+        user = User.objects.get(username=request.session.get('username'))
+        return render(request, 'edit.html', {'post': post_user, 'fenlei_list': fenlei})
+    def post(self,request,id):
+        if  not request.session.get('username'):
+            return  redirect('login')
+        post_user=Article.objects.get(id=id)
+        fenlei=Catagory.objects.all()
+        user=User.objects.get(username=request.session.get('username'))
+        if post_user.users_id==user.id:
             title=request.POST['biaoti1']
             if len(title) <= 0:
                 return render(request, 'xiebo.html', {'msg': "标题不能为空", 'fenlei_list': fenlei})
@@ -407,4 +423,3 @@ def bianji(request,id):
             post_user.save()
             return  redirect('home')
         return  render(request,'edit.html',{'post':post_user,'fenlei_list':fenlei})
-    return redirect('xiebo')
