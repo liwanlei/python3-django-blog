@@ -14,16 +14,20 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
 
-from django.conf.urls import url
+from django.conf.urls import url,include
 from django.contrib import admin
 from blog.views import *
 from django.conf.urls.static import static
 from django.conf import  settings
+from public.xadmin.plugins import  xversion
+from public import xadmin
+xversion.register_models()
+xadmin.autodiscover()
 urlpatterns = [
    #url(r'^uploads/(?P<path>.*)$','django.views.static.serve',{'document_root':settings.STATICFILES_DIRS, 'show_indexes': True}),
 
-    url(r'^admin/', admin.site.urls),
-    url(r'^$', HomeView.as_view(), name=u'home'),
+    #url(r'^admin/', admin.site.urls),
+    url(r'^$', HomeView.as_view(), name='home'),
     url(r'^python$', python,name='python'),
     url(r'^ceshi$', ceshi,name='ceshi'),
     url(r'^dashuju$', dashuju,name='dashuju'),
@@ -36,7 +40,7 @@ urlpatterns = [
     url(r'^login$', LoginView.as_view(),name='login'),
     url(r'^reg$', RegView.as_view(),name='reg'),
     url(r'^(?P<id>\d+)/$',DetailView.as_view(), name='detail'),
-    url(r'^geren$', GerenzhongxinView.as_view(),name='geren'),
+    url(r'^searchgeren', GerenzhongxinView.as_view(),name='geren'),
     url(r'^logout$', LoginView.as_view(),name='logout'),
     url(r'^search$',BlogSearchView.as_view(), name = 'search'),
     url(r'^reset_pwd$', ResetpwdView.as_view(),name='reset_pwd'),
@@ -45,5 +49,6 @@ urlpatterns = [
     url(r'^xiebo$', XieboView.as_view(),name='xiebo'),
     url(r'^zhongxi/(?P<id>\d+)/$', ZhongxinView.as_view(),name='zhongxin'),
     url(r'^shangchuan$',ShangchuantouxiangView.as_view(),name='shangchuan'),
-    url(r'^bianji/(?P<id>\d+)/$',BianjiView.as_view(),name='bianji')
+    url(r'^bianji/(?P<id>\d+)/$',BianjiView.as_view(),name='bianji'),
+    url(r'xadmin/', include(xadmin.site.urls)),
 ]

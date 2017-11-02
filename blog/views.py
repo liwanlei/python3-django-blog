@@ -1,23 +1,19 @@
 # -*- coding:utf-8 -*-  
-from django.shortcuts import render,redirect
-from blog.models import *
-from django.http import Http404, HttpResponseRedirect,HttpResponse
-from  django.db import  connection
-from  django.db.models import  Count
-from django.conf import  settings
-from blog.create_yanzheng import generate_verification_code
-from blog.send_email import send_text
-from blog.times_puls import time_plus
-from datetime import  datetime as  dates
-from django import forms
-import os,time,re
+import datetime,time
+from datetime import datetime
+from datetime import datetime as  dates
 from PIL import Image
-from blog.fenye import fenye
-from django.contrib.auth.decorators import login_required
-from blog.pipei_user import *
-import datetime
-from datetime import datetime, timedelta
+from public.fenye import fenye
+from public.pipei_user import *
+from public.times_puls import time_plus
+from  django.db.models import Count
+from django.http import Http404, HttpResponseRedirect
+from django.shortcuts import render, redirect
 from django.views.generic.base import View
+from blog.models import *
+from blog.models import Ip
+from public.create_yanzheng import generate_verification_code
+from public.send_email import send_text
 def global_setting(request):
     Tag_list = Tag.objects.all()
     post1 = Article.objects.all()
@@ -100,7 +96,21 @@ class LoginView(View):
         return render(request,'login.html',{'msg':'用户名或者密码错误'})
 class RegView(View):
     def get(self,request):
-        return render(request, 'reg.html')
+        ipreques = request.META['REMOTE_ADDR']
+        try:
+            ip_c=Ip.objects.get(ip=ipreques)
+            if ip_c :
+                if (datetime.datetime.now()-ip_c.time).total_seconds()<600:
+                    return render(request, 'login.html', {'msg': u'10分钟内只能注册一次'})
+                ip_c.time=datetime.datetime.now()
+                ip_c.save()
+                return render(request, 'reg.html')
+        except Exception as e:
+            new=Ip()
+            new.ip=str(ipreques)
+            new.time=datetime.datetime.now()
+            new.save()
+            return render(request, 'reg.html')
     def post(self,request):
         username=request.POST['username']
         if len(getuser(username))<=0:
@@ -369,24 +379,25 @@ class ShangchuantouxiangView(View):
         try:
             username = request.session['username']
             photo = request.FILES['touxiang']
-            photo_last = str(photo).split('.')[-1]
-            photoname = '%s.%s' % (username, photo_last)
-            img = Image.open(photo)
-            img.save('touxiang/' + photoname)
             try:
                 be=User.objects.get(username__exact=username)
-                be.avatar=photoname
+                be.avatar=photo
+                print('succsess')
+                return redirect('/')
             except Exception as e:
                 print(e)
-                return redirect('gerenzhongxin.html')
+                return redirect('/gerenzhongxin')
             return render(request,'xiu_touxiang.html')
         except:
-            return  redirect('login.html')
+            return  redirect('/')
 class BianjiView(View):
     def get(self,request,id):
         if not request.session.get('username'):
             return redirect('login')
         post_user = Article.objects.get(id=id)
+        user = User.objects.get(username=request.session.get('username'))
+        if user.id !=post_user:
+            return  redirect('/')
         fenlei = Catagory.objects.all()
         user = User.objects.get(username=request.session.get('username'))
         return render(request, 'edit.html', {'post': post_user, 'fenlei_list': fenlei})
@@ -396,30 +407,25 @@ class BianjiView(View):
         post_user=Article.objects.get(id=id)
         fenlei=Catagory.objects.all()
         user=User.objects.get(username=request.session.get('username'))
-        if post_user.users_id==user.id:
-            title=request.POST['biaoti1']
-            if len(title) <= 0:
-                return render(request, 'xiebo.html', {'msg': "标题不能为空", 'fenlei_list': fenlei})
-            content = request.POST['content']
-            fenle = request.POST['jumpMenu']
-            fen = Catagory.objects.get(name=fenle)
-            if len(fenle) <= 0:
-                return render(request, 'xiebo.html', {'msg': "标签不能为空", 'fenlei_list': fenlei})
-            biaoqian_list = request.POST.getlist('checkbox')
-            biaoqian = (Tag.objects.get(name=biaoqian) for biaoqian in biaoqian_list)
-            try:
-                tuijian = request.POST['tuijian']
-                tuijian = True
-            except:
-                tuijian = False
-            post_user.title=title
-            post_user.categorys=fen
-            post_user.content = content
-            post_user.desc=content[:10]
-            post_user.is_recommend = tuijian
-            post_user.click_count=post_user.click_count
-            for i in biaoqian:
-                post_user.tag.add(i)
-            post_user.save()
-            return  redirect('home')
-        return  render(request,'edit.html',{'post':post_user,'fenlei_list':fenlei})
+        title=request.POST['biaoti1']
+        if len(title) <= 0:
+            return render(request, 'xiebo.html', {'msg': "标题不能为空", 'fenlei_list': fenlei})
+        content = request.POST['content']
+        fenle = request.POST['jumpMenu']
+        fen = Catagory.objects.get(name=fenle)
+        if len(fenle) <= 0:
+            return render(request, 'xiebo.html', {'msg': "标签不能为空", 'fenlei_list': fenlei})
+        biaoqian_list = request.POST.getlist('checkbox')
+        try:
+            tuijian = request.POST['tuijian']
+            tuijian = True
+        except:
+            tuijian = False
+        post_user.title=title
+        post_user.categorys=fen
+        post_user.content = content
+        post_user.desc=content[:10]
+        post_user.is_recommend = tuijian
+        post_user.click_count=post_user.click_count
+        post_user.save()
+        return  redirect('/')

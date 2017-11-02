@@ -2,6 +2,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.core.urlresolvers import reverse
+import datetime,time
 class ArticleManager(models.Manager):
     def distinct_date(self):
         distint_daye_lisy=[]
@@ -15,6 +16,9 @@ class User(AbstractUser):
     avatar=models.ImageField(upload_to='vaatar/%Y/%m',default='vaatar/default/pang')
     qq=models.CharField(u'qq号码', max_length=20,blank=True)
     mobile=models.CharField(u'手机号',max_length=11,blank=True,null=True,unique=True)
+    login_sta = models.CharField(u'登录是否锁定', max_length=2, default=0)
+    login_suo = models.DateTimeField(u'登录锁定时间', default=datetime.datetime.now())
+    is_login = models.BooleanField(default=False)
     class Meta:
         verbose_name = u'用户'
         verbose_name_plural = verbose_name
@@ -111,6 +115,13 @@ class Usernam(models.Model):
     class Meta:
         verbose_name = u'关注'
         verbose_name_plural = verbose_name
-
     def __str__(self):
         return u'%s' % self.users
+class Ip(models.Model):
+    ip=models.CharField(max_length=20)
+    time=models.DateTimeField()
+    class Meta:
+        verbose_name = u'访问时间'
+        verbose_name_plural = verbose_name
+    def __str__(self):
+        return self.ip
