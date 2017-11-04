@@ -17,7 +17,8 @@ class User(AbstractUser):
     qq=models.CharField(u'qq号码', max_length=20,blank=True)
     mobile=models.CharField(u'手机号',max_length=11,blank=True,null=True,unique=True)
     login_sta = models.CharField(u'登录是否锁定', max_length=2, default=0)
-    login_suo = models.DateTimeField(u'登录锁定时间', default=datetime.datetime.now())
+    login_suo = models.DateTimeField(u'登录锁定时间')
+    pass_errnum=models.IntegerField(u'用户密码输入次数',default=0)
     is_login = models.BooleanField(default=False)
     class Meta:
         verbose_name = u'用户'

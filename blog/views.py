@@ -3,6 +3,7 @@ import datetime,time
 from datetime import datetime
 from datetime import datetime as  dates
 from PIL import Image
+from django.views.decorators.cache import cache_page
 from public.fenye import fenye
 from public.pipei_user import *
 from public.times_puls import time_plus
@@ -11,9 +12,9 @@ from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.views.generic.base import View
 from blog.models import *
-from blog.models import Ip
 from public.create_yanzheng import generate_verification_code
 from public.send_email import send_text
+from django.contrib.auth.hashers import make_password, check_password
 def global_setting(request):
     Tag_list = Tag.objects.all()
     post1 = Article.objects.all()
@@ -84,16 +85,37 @@ class LoginView(View):
     def get(self,request):
         return render(request, 'login.html')
     def post(self,request):
-        errors_list = []
+        next = request.META.get('HTTP_REFERER')
         username=request.POST.get('username',None)
         password=request.POST.get('password',None)
-        user = User.objects.filter(username__exact = username,password__exact = password)
-        request.session['username'] = username
-        if user:
-            response= HttpResponseRedirect('/')
-            response.set_cookie('username', username, 3600)
-            return response
-        return render(request,'login.html',{'msg':'用户名或者密码错误'})
+        try:
+            user = User.objects.get(username= username)
+            if user.is_login==True:
+                return render(request, 'login.html', {'msg': '同时只能登陆一台设备!'})
+            if user.login_sta==True:
+                return render(request, 'login.html', {'msg': '账号已经冻结!'})
+            if (datetime.datetime.now()-user.login_suo).total_seconds() <600:
+                return render(request, 'login.html', {'msg': '账号锁定十分钟内不能登陆!'})
+            if user.pass_errnum>5:
+                user.login_suo=datetime.datetime.now()
+                return render(request, 'login.html', {'msg': '密码输入超过5次，用户锁定十分钟'})
+            if check_password(password,user.password) :
+                request.session['username'] = username
+                if '/logout' or '/reg' in next:
+                    response = HttpResponseRedirect('/')
+                else:
+                    response= HttpResponseRedirect(next)
+                user.last_login=datetime.datetime.now()
+                user.is_login=True
+                user.pass_errnum=0
+                user.save()
+                response.set_cookie('username', username, 3600)
+                return response
+            user.pass_errnum+=1
+            user.save()
+            return render(request, 'login.html', {'msg': '密码错误'})
+        except:
+            return render(request,'login.html',{'msg':'用户名不存在！'})
 class RegView(View):
     def get(self,request):
         ipreques = request.META['REMOTE_ADDR']
@@ -133,7 +155,7 @@ class RegView(View):
             if passwor1==passwor2:
                 use1=User()
                 use1.username=username
-                use1.password=passwor1
+                use1.password=make_password(passwor1)
                 use1.mobile=shouj
                 use1.email=youjian
                 use1.save()
@@ -152,9 +174,6 @@ class DetailView(View):
     def post(self,request, id):
         try:
             post = Article.objects.get(id=str(id))
-            p1 = Article.objects.get(id=str(id))
-            p1.click_count += 1
-            p1.save()
             commn__list = Comment.objects.filter(article__title=post)
             username = request.session['username']
             if username:
@@ -176,7 +195,8 @@ class LogoutView(View):
     def get(self,request):
         try:
             user = User.objects.get(username__exact=request.session['username'])
-            user.last_login= datetime.utcnow()
+            user.last_login=datetime.datetime.now()
+            user.is_login=False
             user.save()
             del request.session['username']
             return render(request,'index.html')
@@ -184,25 +204,22 @@ class LogoutView(View):
             return HttpResponseRedirect('/')
 class GerenzhongxinView(View):
     def get(self,request):
+        username = request.session['username']
         try:
-            username = request.session['username']
-            try:
-                post_list6 = Article.objects.filter(users__username=username)
-                post_list = fenye(request, posts=post_list6)
-                readlist = post_list6.order_by('-click_count')[0:6]
-                me = Article.objects.filter(is_recommend=True)
-                tuijian_list = me.filter(users__username=username)
-                me = Article.objects.filter(users__exact=(User.objects.filter(username__exact=username)))
-                comu=[]
-                for i in me:
-                    comu.extend(Comment.objects.filter(user__comment__article=i).filter(date_publish__gte=(User.objects.get(username__exact=username)).last_login))
-                if len(comu)<=0:
-                    return render(request, 'gerenzhongxin.html',{"post_list": post_list, 'readlist': readlist, 'tuijian_list': tuijian_list})
-                return render(request, 'gerenzhongxin.html',{"post_list": post_list, 'readlist': readlist, 'tuijian_list': tuijian_list,"comu_list":comu})
-            except:
-                return render(request, 'gerenzhongxin.html',)
+            post_list6 = Article.objects.filter(users__username=username)
+            post_list = fenye(request, posts=post_list6)
+            readlist = post_list6.order_by('-click_count')[0:6]
+            me = Article.objects.filter(is_recommend=True)
+            tuijian_list = me.filter(users__username=username)
+            me = Article.objects.filter(users__exact=(User.objects.filter(username__exact=username)))
+            comu=[]
+            for i in me:
+                comu.extend(Comment.objects.filter(user__comment__article=i).filter(date_publish__gte=(User.objects.get(username__exact=username)).last_login))
+            if len(comu)<=0:
+                return render(request, 'gerenzhongxin.html',{"post_list": post_list, 'readlist': readlist, 'tuijian_list': tuijian_list})
+            return render(request, 'gerenzhongxin.html',{"post_list": post_list, 'readlist': readlist, 'tuijian_list': tuijian_list,"comu_list":comu})
         except:
-            return redirect('/')
+            return render(request, 'gerenzhongxin.html',)
 class BlogSearchView(View):
     def get(self,request):
         return render(request, 'archives.html',{})
@@ -382,10 +399,8 @@ class ShangchuantouxiangView(View):
             try:
                 be=User.objects.get(username__exact=username)
                 be.avatar=photo
-                print('succsess')
                 return redirect('/')
             except Exception as e:
-                print(e)
                 return redirect('/gerenzhongxin')
             return render(request,'xiu_touxiang.html')
         except:
