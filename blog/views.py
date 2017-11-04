@@ -49,6 +49,7 @@ def python(request):
     posts=Article.objects.filter(tag__name='python')
     post_list = fenye(request, posts=posts)
     return render(request, 'index.html', {'post_list': post_list,})
+@cache_page(60*15)
 def ceshi(request):
     posts=Article.objects.filter(tag__name=u'测试')
     post_list = fenye(request, posts=posts)

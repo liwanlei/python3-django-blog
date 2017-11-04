@@ -21,13 +21,14 @@ from django.conf.urls.static import static
 from django.conf import  settings
 from public.xadmin.plugins import  xversion
 from public import xadmin
+from django.views.decorators.cache import cache_page
 xversion.register_models()
 xadmin.autodiscover()
 urlpatterns = [
    #url(r'^uploads/(?P<path>.*)$','django.views.static.serve',{'document_root':settings.STATICFILES_DIRS, 'show_indexes': True}),
 
     #url(r'^admin/', admin.site.urls),
-    url(r'^$', HomeView.as_view(), name='home'),
+    url(r'^$', cache_page(60*2)(HomeView.as_view()), name='home'),
     url(r'^python$', python,name='python'),
     url(r'^ceshi$', ceshi,name='ceshi'),
     url(r'^dashuju$', dashuju,name='dashuju'),
@@ -37,10 +38,10 @@ urlpatterns = [
     url(r'^mysql$', Mysql,name='mysql'),
     url(r'^git$', git,name='git'),
     url(r'^qianduan$', qianduan,name='qianduan'),
-    url(r'^login$', LoginView.as_view(),name='login'),
-    url(r'^reg$', RegView.as_view(),name='reg'),
+    url(r'^login$', cache_page(60*30)(LoginView.as_view()),name='login'),
+    url(r'^reg$', cache_page(60*30)(RegView.as_view()),name='reg'),
     url(r'^(?P<id>\d+)/$',DetailView.as_view(), name='detail'),
-    url(r'^searchgeren', GerenzhongxinView.as_view(),name='geren'),
+    url(r'^person$', GerenzhongxinView.as_view(),name='person'),
     url(r'^logout$', LoginView.as_view(),name='logout'),
     url(r'^search$',BlogSearchView.as_view(), name = 'search'),
     url(r'^reset_pwd$', ResetpwdView.as_view(),name='reset_pwd'),

@@ -17,7 +17,7 @@
 	</div>
 	<div class="collapse navbar-collapse" id="zhuce">
 			<ul class="nav navbar-nav">
-				<li><a href="{% url 'gerenzhongxin ' %}"><span class="glyphicon ">{{ username }}</span></a></li>
+				<li><a href="{% url 'person' %}"><span class="glyphicon ">{{ username }}</span></a></li>
 				<li><a href="{%  url 'xiugaimima' %}"><span class="glyphicon ">修改密码</span></a></li>
 				<li><a href="{% url 'logout' %}"><span class="glyphicon ">退出</span></a></li>
 			</ul></div>
@@ -51,7 +51,7 @@
             <h5>最新评论</h5>
               {% for item in comu_list %}
                   <div>
-                  用户:<a href="{% url 'zhongxin' id= item.user_id %}" class="feed_author">{{item.user}}</a>
+                  用户:<a href="{% url 'zhongxin' id=item.user_id %}" class="feed_author">{{item.user}}</a>
                   时间：<span>{{ item.date_publish}}</span>
                   在文章<a href="{% url 'detail' id=item.article_id %}">{{ item.article }}</a>发表评论
                   </div>
