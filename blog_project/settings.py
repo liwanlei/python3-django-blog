@@ -22,8 +22,9 @@ sys.path.insert(0, os.path.join(BASE_DIR, 'public'))
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = '2nq*)__r9p-n(b^)07wf_(6*di6e3_1rt^ljfdb)5sz-+q@hrd'
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-ALLOWED_HOSTS = []
+# DEBUG = False
+ALLOWED_HOSTS = ['*']
+
 # Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',

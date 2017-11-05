@@ -53,3 +53,5 @@ urlpatterns = [
     url(r'^bianji/(?P<id>\d+)/$',BianjiView.as_view(),name='bianji'),
     url(r'xadmin/', include(xadmin.site.urls)),
 ]
+handler404=pageNofoud
+handler403=permission_denied

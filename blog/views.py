@@ -9,7 +9,7 @@ from public.pipei_user import *
 from public.times_puls import time_plus
 from  django.db.models import Count
 from django.http import Http404, HttpResponseRedirect
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect,render_to_response
 from django.views.generic.base import View
 from blog.models import *
 from public.create_yanzheng import generate_verification_code
@@ -445,3 +445,9 @@ class BianjiView(View):
         post_user.click_count=post_user.click_count
         post_user.save()
         return  redirect('/')
+@cache_page(60*15)
+def pageNofoud(request):
+    return render_to_response('404.html')
+@cache_page(60*15)
+def permission_denied(request):
+    return render_to_response('403.html')
