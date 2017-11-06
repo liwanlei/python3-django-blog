@@ -1,5 +1,5 @@
 # -*- coding:utf-8 -*-  
-import datetime,time
+import datetime,time,redis
 from datetime import datetime
 from datetime import datetime as  dates
 from PIL import Image
@@ -15,6 +15,7 @@ from blog.models import *
 from public.create_yanzheng import generate_verification_code
 from public.send_email import send_text
 from django.contrib.auth.hashers import make_password, check_password
+r=redis.Redis(host='127.0.0.1',port=6379,db=0)
 def global_setting(request):
     Tag_list = Tag.objects.all()
     post1 = Article.objects.all()
@@ -119,22 +120,12 @@ class LoginView(View):
             return render(request,'login.html',{'msg':'用户名不存在！'})
 class RegView(View):
     def get(self,request):
-        ipreques = request.META['REMOTE_ADDR']
-        try:
-            ip_c=Ip.objects.get(ip=ipreques)
-            if ip_c :
-                if (datetime.datetime.now()-ip_c.time).total_seconds()<600:
-                    return render(request, 'login.html', {'msg': u'10分钟内只能注册一次'})
-                ip_c.time=datetime.datetime.now()
-                ip_c.save()
-                return render(request, 'reg.html')
-        except Exception as e:
-            new=Ip()
-            new.ip=str(ipreques)
-            new.time=datetime.datetime.now()
-            new.save()
-            return render(request, 'reg.html')
+        return  render(request,'reg.html')
     def post(self,request):
+        ipreques = request.META['REMOTE_ADDR']
+        ip_re = r.get(ipreques)
+        if ip_re:
+            return render(request, 'reg.html', {'msg': u'10分钟只能注册一次'})
         username=request.POST['username']
         if len(getuser(username))<=0:
             return render(request,'reg.html',{'msg':u'用户名应该是6-16组成'})
@@ -160,10 +151,10 @@ class RegView(View):
                 use1.mobile=shouj
                 use1.email=youjian
                 use1.save()
+                r.set(ipreques,1,ex=600)
                 return HttpResponseRedirect('login')
             else:
                 return render(request,'reg.html',{'msg':u'请查看密码是否一致'})
-        return render(request,'reg.html')
 class DetailView(View):
     def get(self,request,id):
         post = Article.objects.get(id=str(id))
