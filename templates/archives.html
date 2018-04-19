@@ -1,39 +1,39 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="posts">
-    {% if error %}
-        <h2 class="post-title">没有相关文章题目</h2>
-    {% else %}
-    {% for post in post_list %}
-        <section class="post">
-            <header class="post-header">
-                <div>
-			<h4><a href="{% url 'detail' id=post.id %}">{{ post.title }}</a></h4>
-			  <small>时间 {{ post.date_publish }}作者<a href="{% url 'zhongxin' id=post.users_id   %}">{{ post.users }} </a>  阅读，
-				  <a href="">收藏</a>，
-			  </small>
-			<p>{{ post.desc }}</p><a class="pure-button" href="{% url 'detail' id=post.id %}}" >更多  </a>
-			<ul class="postmetadata">
-                <span class="zan"></span></ul>
-		</div>
-            </header>
-        </section>
-    {% endfor %}
-    {% endif %}
-</div>
+    <div class="posts">
+        {% if error %}
+            <h2 class="post-title">没有相关文章题目</h2>
+        {% else %}
+            {% for post in post_list %}
+                <section class="post">
+                    <header class="post-header">
+                        <div>
+                            <h4><a href="{% url 'detail' id=post.id %}">{{ post.title }}</a></h4>
+                            <small>时间 {{ post.date_publish }}作者<a href="{% url 'zhongxin' id=post.users_id   %}">{{ post.users }} </a>  阅读，
+                                <a href="">收藏</a>，
+                            </small>
+                            <p>{{ post.desc }}</p><a class="pure-button" href="{% url 'detail' id=post.id %}}" >更多  </a>
+                            <ul class="postmetadata">
+                                <span class="zan"></span></ul>
+                        </div>
+                    </header>
+                </section>
+            {% endfor %}
+        {% endif %}
+    </div>
 {% endblock %}
 {% block read %}
     {% for item in post_list5 %}
-    <p ><a href="{% url 'detail' id=item.id %}">{{ item.title }}</a></p>
+        <p ><a href="{% url 'detail' id=item.id %}">{{ item.title }}</a></p>
     {% endfor %}
 {% endblock %}
 {% block pinglun %}
     {% for pi in post_list_ping %}
-    <p ><a href="{% url 'detail' id=pi.id %}">{{ pi.title}}</a></p>
+        <p ><a href="{% url 'detail' id=pi.id %}">{{ pi.title}}</a></p>
     {% endfor %}
 {% endblock %}
 {% block lianjie %}
     {% for me in  chaolianjie %}
-    <p ><a href="{{ me.callback_url }}">{{ me.title}}</a></p>
+        <p ><a href="{{ me.callback_url }}">{{ me.title}}</a></p>
     {% endfor %}
 {% endblock %}

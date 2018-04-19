@@ -1,58 +1,58 @@
 {% extends "base.html" %}
 {% block content %}
     <div class="col-md-9" >
-		<div>
-			<h4><a href="">{{ post.title }}</a></h4>
-			  <small>时间 {{ post.date_publish }} 作者:<a href="{% url 'zhongxin' id=post.users.id%}">{{ post.users }}</a>  阅读{{ post.click_count }}，
-				  <a href="{% url 'bianji' id=post.id %}">编辑</a>
-			  </small>
-			<p>{{ post.content | safe}}</p>
-		</div>
-			<div>
-			<ul class="postmetadata">
-	        <li class="icon_cat" id="BlogPostCategory">分类: <a href="{{ post.categorys }}" target="_blank">{{ post.categorys }}</a></li>
-   		 </ul>
-                <form   role="form"   method="POST">
-                    {% if username %}
-			        <div id="comment_form_container">
-			        <div id="commentform_title">发表评论</div>
-		            <span id="tip_comment" style="color:Red"></span>
-		                <p>用户名：<input type="text"  name="username" id="tbCommentAuthor" class="author" disabled="disabled" size="50" value={{ username }}></p>
-		    <div class="commentbox_main">
-		        <div class="commentbox_title">
-		        <div class="commentbox_title_left" >评论内容：</div>
-		        <div class="commentbox_title_right"></div></div>
-		        <textarea id="tbCommentBody" class="comment_textarea" name="content" ></textarea></div>
-		        <button type="submit" class="btn btn-default" >提交评论</button></div>
-                        </form>
-			{% else %}
-			<div class="login_tips">注册用户登录后才能发表评论，请 <a rel="nofollow" href="{%  url 'login' %}" class="underline" >登录</a> 或 <a rel="nofollow" href="{%  url 'reg' %}" class="underline" onclick="">注册</a>，<a href="/">访问</a>网站首页。</div>{% endif %}
-              {% for item in commn__list %}
-   		 <li class="alt">
-			<h5>
-				<cite><a href="#3347885" class="layer"></a>
-				 <a id="a_comment_author_3347885" href="{% url 'zhongxin' id=item.user.id%}" target="_blank">{{ item.user }}</a>
-				<small> <span class="comment_date">{{ item.date_publish }}</span></small>
-			</cite></h5>
-			<div id="comment_body_3347885" class="blog_comment_body">
-			<p>{{ item.content |safe }}</p>
-                 </div>
-		</li>
+        <div>
+            <h4><a href="">{{ post.title }}</a></h4>
+            <small>时间 {{ post.date_publish }} 作者:<a href="{% url 'zhongxin' id=post.users.id%}">{{ post.users }}</a>  阅读{{ post.click_count }}，
+                <a href="{% url 'bianji' id=post.id %}">编辑</a>
+            </small>
+            <p>{{ post.content | safe}}</p>
+        </div>
+        <div>
+            <ul class="postmetadata">
+                <li class="icon_cat" id="BlogPostCategory">分类: <a href="{{ post.categorys }}" target="_blank">{{ post.categorys }}</a></li>
+            </ul>
+            <form   role="form"   method="POST">
+                {% if username %}
+                    <div id="comment_form_container">
+                        <div id="commentform_title">发表评论</div>
+                        <span id="tip_comment" style="color:Red"></span>
+                        <p>用户名：<input type="text"  name="username" id="tbCommentAuthor" class="author" disabled="disabled" size="50" value={{ username }}></p>
+                        <div class="commentbox_main">
+                            <div class="commentbox_title">
+                                <div class="commentbox_title_left" >评论内容：</div>
+                                <div class="commentbox_title_right"></div></div>
+                            <textarea id="tbCommentBody" class="comment_textarea" name="content" ></textarea></div>
+                        <button type="submit" class="btn btn-default" >提交评论</button></div>
+                    </form>
+                {% else %}
+                    <div class="login_tips">注册用户登录后才能发表评论，请 <a rel="nofollow" href="{%  url 'login' %}" class="underline" >登录</a> 或 <a rel="nofollow" href="{%  url 'reg' %}" class="underline" onclick="">注册</a>，<a href="/">访问</a>网站首页。</div>{% endif %}
+            {% for item in commn__list %}
+                <li class="alt">
+                    <h5>
+                        <cite><a href="#3347885" class="layer"></a>
+                            <a id="a_comment_author_3347885" href="{% url 'zhongxin' id=item.user.id%}" target="_blank">{{ item.user }}</a>
+                            <small> <span class="comment_date">{{ item.date_publish }}</span></small>
+                        </cite></h5>
+                    <div id="comment_body_3347885" class="blog_comment_body">
+                        <p>{{ item.content |safe }}</p>
+                    </div>
+                </li>
             {% endfor %}
-            </div></div>
+        </div></div>
 {% endblock %}
 {% block read %}
     {% for item in post_list %}
-    <p ><a href="{% url 'detail' id=item.id %}">{{ item.title }}</a></p>
+        <p ><a href="{% url 'detail' id=item.id %}">{{ item.title }}</a></p>
     {% endfor %}
 {% endblock %}
 {% block pinglun %}
     {% for pi in post_list_ping %}
-    <p ><a href="{% url 'detail' id=pi.id %}">{{ pi.title}}</a></p>
+        <p ><a href="{% url 'detail' id=pi.id %}">{{ pi.title}}</a></p>
     {% endfor %}
 {% endblock %}
 {% block lianjie %}
     {% for me in  chaolianjie %}
-    <p ><a href="{{ me.callback_url }}">{{ me.title}}</a></p>
+        <p ><a href="{{ me.callback_url }}">{{ me.title}}</a></p>
     {% endfor %}
 {% endblock %}

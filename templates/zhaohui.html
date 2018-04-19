@@ -1,34 +1,35 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="utf-8"> 
-	<title>找回密码</title>
-{% load staticfiles %}
+    <meta charset="utf-8">
+    <title>找回密码</title>
+    {% load staticfiles %}
     <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'css/common.css' %}">
     <script src="{% static 'js/jquery-3.1.1.min.js' %}"></script>
-	<script src="{% static 'js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
 </head>
 <body  class="login">
-  <form class="form-horizontal" role="form" method="POST">
+<form class="form-horizontal" role="form" method="POST">
+    {% csrf_token %}
     <div class="form-group">
-    	  <label for="firstname" class="col-sm-2 control-label">用户名</label>
-      <div class="col-sm-3">
-        <input type="text" class="form-control" name="firstname" placeholder="用户名">
-      </div>
+        <label for="firstname" class="col-sm-2 control-label">用户名</label>
+        <div class="col-sm-3">
+            <input type="text" class="form-control" name="firstname" placeholder="用户名">
+        </div>
     </div>
     <div class="form-group">
-      <label for="lastname" class="col-sm-2 control-label">注册邮箱</label>
-      <div class="col-sm-3">
-        <input  type="text" class="form-control"  name="email"  placeholder="注册邮箱">
-      </div>
+        <label for="lastname" class="col-sm-2 control-label">注册邮箱</label>
+        <div class="col-sm-3">
+            <input  type="text" class="form-control"  name="email"  placeholder="注册邮箱">
+        </div>
     </div> 
     <div class="form-group">
-      <div class="col-sm-offset-2 col-sm-10">
-        <button type="submit" class="btn btn-default">找回密码</button>
-          <h4>{{ msg }}</h4>
+        <div class="col-sm-offset-2 col-sm-10">
+            <button type="submit" class="btn btn-default">找回密码</button>
+            <h4>{{ msg }}</h4>
+        </div>
     </div>
-  </div>
 </form>
 </body>
 </html>

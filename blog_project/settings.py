@@ -37,7 +37,7 @@ INSTALLED_APPS = [
     'xadmin',
     'crispy_forms',
     'reversion',
-    'DjangoUeditor'
+    'DjangoUeditor',
 ]
 
 MIDDLEWARE = [
@@ -46,6 +46,7 @@ MIDDLEWARE = [
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
    # 'django.middleware.csrf.CsrfViewMiddleware',
+   # 'django.middleware.csrf.CsrfResponseMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -126,13 +127,6 @@ MEDIA_URL = '/touxiang/'
 SESSION_COOKIE_AGE = 15*60
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
-EMAIL_HOST='pop.qq.com'
-EMAIL_HOST_USER='952943386@qq.com'
-EMAIL_HOST_PASSWORD='zjbuavvaffibbdca'
-EMAIL_PORT = 25
-DEFAULT_FROM_EMAIL='passwordreset<*******@163.com>'
-EMAIL_USE_TLS = True
-SERVER_EMAIL = 'leileili126@163.com'
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',

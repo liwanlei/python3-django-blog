@@ -11,6 +11,7 @@
 </head>
 <body  class="login">
 <form class="form-horizontal" role="form" method="POST">
+    {% csrf_token %}
   <div class="form-group">
     <label for="firstname" class="col-sm-2 control-label">用户名</label>
     <div class="col-sm-3">
@@ -35,8 +36,6 @@
       <label>没有账号，前去<a href="{%  url 'reg' %}">注册</a></label><span>    </span>
       <h4>忘记密码？<a href="{%  url 'reset_pwd' %}">通过邮箱找回密码</a></h4>
         <h4 style="color: red">{{ msg }}</h4>
-
-    
     </div>
 
   </div>

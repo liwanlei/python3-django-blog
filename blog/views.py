@@ -1,17 +1,17 @@
 # -*- coding:utf-8 -*-  
-import datetime,time,redis
+import redis
 from datetime import datetime
 from datetime import datetime as  dates
-from PIL import Image
 from django.views.decorators.cache import cache_page
 from public.fenye import fenye
 from public.pipei_user import *
 from public.times_puls import time_plus
 from  django.db.models import Count
 from django.http import Http404, HttpResponseRedirect
-from django.shortcuts import render, redirect,render_to_response
+from django.shortcuts import render, redirect,render_to_response,RequestContext
 from django.views.generic.base import View
 from blog.models import *
+from django.views.decorators.csrf import csrf_protect
 from public.create_yanzheng import generate_verification_code
 from public.send_email import send_text
 from django.contrib.auth.hashers import make_password, check_password
@@ -26,18 +26,7 @@ def global_setting(request):
     beijing_post_list = (Article.objects.get(pk=coment_count['article']) for coment_count in (coment_count_list[:5]))
     teing_list=Links.objects.all()
     fenlei_list = Catagory.objects.all()
-    if 'username' in request.session:
-        username = request.session['username']
-        me = Article.objects.filter(users__exact=(User.objects.filter(username__exact=username)))
-        h=0
-        for i in me:
-            comu = (Comment.objects.filter(user__comment__article=i).filter(date_publish__gte=(User.objects.get(username__exact=username)).last_login).filter(date_publish__lte=dates.utcnow())).count()
-            h+=int(comu)
-        if h==0:
-            return {'Tag_list': Tag_list, 'post_list': read_list, 'post_list_ping': beijing_post_list,'chaolianjie': teing_list, 'username': username}
-        return {'Tag_list':Tag_list,'post_list':read_list,'post_list_ping':beijing_post_list,'chaolianjie':teing_list,'username':username,'coumn':h}
-    else:
-        return {'Tag_list':Tag_list,'post_list':read_list,'post_list_ping':beijing_post_list,'chaolianjie':teing_list}
+    return {'Tag_list':Tag_list,'post_list':read_list,'post_list_ping':beijing_post_list,'chaolianjie':teing_list}
 class HomeView(View):
     def get(self,request):
         posts = Article.objects.all()
@@ -83,6 +72,7 @@ def dashuju(request): #大数据 文章获取
     posts=Article.objects.filter(tag__name=u'大数据')
     post_list=fenye(request,posts=posts)
     return render(request, 'index.html', {'post_list': post_list,})
+
 class LoginView(View):
     def get(self,request):
         return render(request, 'login.html')
@@ -93,14 +83,14 @@ class LoginView(View):
         try:
             user = User.objects.get(username= username)
             if user.is_login==True:
-                return render(request, 'login.html', {'msg': '同时只能登陆一台设备!'})
+                return render_to_response(request, 'login.html',{'msg': '同时只能登陆一台设备!'})
             if user.login_sta==True:
-                return render(request, 'login.html', {'msg': '账号已经冻结!'})
+                return render_to_response(request, 'login.html', {'msg': '账号已经冻结!'})
             if (datetime.datetime.now()-user.login_suo).total_seconds() <600:
-                return render(request, 'login.html', {'msg': '账号锁定十分钟内不能登陆!'})
+                return render_to_response(request, 'login.html', {'msg': '账号锁定十分钟内不能登陆!'})
             if user.pass_errnum>5:
                 user.login_suo=datetime.datetime.now()
-                return render(request, 'login.html', {'msg': '密码输入超过5次，用户锁定十分钟'})
+                return render_to_response(request, 'login.html', {'msg': '密码输入超过5次，用户锁定十分钟'})
             if check_password(password,user.password) :
                 request.session['username'] = username
                 if '/logout' or '/reg' in next:
@@ -115,9 +105,9 @@ class LoginView(View):
                 return response
             user.pass_errnum+=1
             user.save()
-            return render(request, 'login.html', {'msg': '密码错误'})
+            return render_to_response(request, 'login.html', {'msg': '密码错误'})
         except:
-            return render(request,'login.html',{'msg':'用户名不存在！'})
+            return render_to_response(request,'login.html',{'msg':'用户名不存在！'})
 class RegView(View):
     def get(self,request):
         return  render(request,'reg.html')
